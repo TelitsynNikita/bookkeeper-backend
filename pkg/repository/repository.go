@@ -11,6 +11,9 @@ type Authorization interface {
 }
 
 type RequestList interface {
+	Create(userId int, request todo.Request) (int, error)
+	GetAll(userId int) ([]todo.AllRequests, error)
+	GetOne(requestId int) (todo.OneRequest, error)
 }
 
 type Repository struct {
@@ -21,5 +24,6 @@ type Repository struct {
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
+		RequestList:   NewRequestListPostgres(db),
 	}
 }
