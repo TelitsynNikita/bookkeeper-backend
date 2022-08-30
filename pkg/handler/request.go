@@ -8,13 +8,7 @@ import (
 )
 
 func (h *Handler) GetAllRequests(c *gin.Context) {
-	userId, ok := c.Get(userCtx)
-	if !ok {
-		NewErrorResponse(c, http.StatusInternalServerError, "user id not found")
-		return
-	}
-
-	requests, err := h.services.RequestList.GetAll(userId.(int))
+	requests, err := h.services.RequestList.GetAll()
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

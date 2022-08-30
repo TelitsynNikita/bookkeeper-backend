@@ -17,8 +17,8 @@ func (s *RequestListService) Create(userId int, request todo.Request) (int, erro
 	return s.repo.Create(userId, request)
 }
 
-func (s *RequestListService) GetAll(userId int) ([]todo.AllRequests, error) {
-	return s.repo.GetAll(userId)
+func (s *RequestListService) GetAll() ([]todo.AllRequests, error) {
+	return s.repo.GetAll()
 }
 
 func (s *RequestListService) GetOne(requestId int) (todo.OneRequest, error) {

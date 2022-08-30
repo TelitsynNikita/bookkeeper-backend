@@ -26,18 +26,18 @@ func (r *RequestListPostgres) Create(userId int, request todo.Request) (int, err
 	return id, nil
 }
 
-func (r *RequestListPostgres) GetAll(userId int) ([]todo.AllRequests, error) {
+func (r *RequestListPostgres) GetAll() ([]todo.AllRequests, error) {
 	var requests []todo.AllRequests
-	query := fmt.Sprintf("SELECT tl.id, tl.purpose, tl.amount, tl.status, ul.full_name FROM %s tl JOIN %s ul on tl.user_id = ul.id WHERE ul.id = $1",
+	query := fmt.Sprintf("SELECT tl.id, tl.purpose, tl.amount, tl.status, ul.full_name FROM %s tl JOIN %s ul on tl.user_id = ul.id",
 		requestsTable, usersTable)
-	err := r.db.Select(&requests, query, userId)
+	err := r.db.Select(&requests, query)
 
 	return requests, err
 }
 
 func (r *RequestListPostgres) GetOne(requestId int) (todo.OneRequest, error) {
 	var request todo.OneRequest
-	query := fmt.Sprintf("SELECT tl.id, tl.purpose, tl.amount, tl.status, tl.description, tl. ul.full_name FROM %s tl JOIN %s ul on tl.user_id = ul.id WHERE tl.id = $1",
+	query := fmt.Sprintf("SELECT tl.id, tl.purpose, tl.amount, tl.status, tl.description, tl.user_id, ul.full_name FROM %s tl JOIN %s ul on tl.user_id = ul.id WHERE tl.id = $1",
 		requestsTable, usersTable)
 	err := r.db.Get(&request, query, requestId)
 
@@ -52,7 +52,7 @@ func (r *RequestListPostgres) DeleteOne(requestId int) error {
 }
 
 func (r *RequestListPostgres) Update(requestStatus todo.UpdateStatus) error {
-	query := fmt.Sprintf("UPDATE %s SET status=$1  WHERE id=$2", requestsTable)
+	query := fmt.Sprintf("UPDATE %s tl SET status=$1  WHERE id=$2", requestsTable)
 	_, err := r.db.Exec(query, requestStatus.Status, requestStatus.RequestId)
 
 	return err
