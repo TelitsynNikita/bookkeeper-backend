@@ -28,3 +28,8 @@ type OneRequest struct {
 	UserId      int      `json:"user_id" db:"user_id"`
 	FullName    string   `json:"full_name" db:"full_name"`
 }
+
+type UpdateStatus struct {
+	Status    string `json:"status" db:"status"`
+	RequestId int    `json:"id" db:"id"`
+}

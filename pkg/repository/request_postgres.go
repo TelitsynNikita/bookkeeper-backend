@@ -43,3 +43,17 @@ func (r *RequestListPostgres) GetOne(requestId int) (todo.OneRequest, error) {
 
 	return request, err
 }
+
+func (r *RequestListPostgres) DeleteOne(requestId int) error {
+	query := fmt.Sprintf("DELETE FROM %s tl WHERE tl.id=$1", requestsTable)
+	_, err := r.db.Exec(query, requestId)
+
+	return err
+}
+
+func (r *RequestListPostgres) Update(requestStatus todo.UpdateStatus) error {
+	query := fmt.Sprintf("UPDATE %s SET status=$1  WHERE id=$2", requestsTable)
+	_, err := r.db.Exec(query, requestStatus.Status, requestStatus.RequestId)
+
+	return err
+}

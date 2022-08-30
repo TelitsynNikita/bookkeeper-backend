@@ -24,3 +24,11 @@ func (s *RequestListService) GetAll(userId int) ([]todo.AllRequests, error) {
 func (s *RequestListService) GetOne(requestId int) (todo.OneRequest, error) {
 	return s.repo.GetOne(requestId)
 }
+
+func (s *RequestListService) DeleteOne(requestId int) error {
+	return s.repo.DeleteOne(requestId)
+}
+
+func (s *RequestListService) Update(requestStatus todo.UpdateStatus) error {
+	return s.repo.Update(requestStatus)
+}

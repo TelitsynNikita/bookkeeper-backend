@@ -15,6 +15,8 @@ type RequestList interface {
 	Create(userId int, request todo.Request) (int, error)
 	GetAll(userId int) ([]todo.AllRequests, error)
 	GetOne(requestId int) (todo.OneRequest, error)
+	DeleteOne(requestId int) error
+	Update(requestStatus todo.UpdateStatus) error
 }
 
 type Service struct {

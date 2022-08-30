@@ -68,9 +68,37 @@ func (h *Handler) CreateRequest(c *gin.Context) {
 }
 
 func (h *Handler) UpdateRequest(c *gin.Context) {
+	var input todo.UpdateStatus
+	if err := c.BindJSON(&input); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
+	err := h.services.RequestList.Update(input)
+	if err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Успешно обновлено",
+	})
 }
 
 func (h *Handler) DeleteRequest(c *gin.Context) {
+	requestId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
+	err = h.services.RequestList.DeleteOne(requestId)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Запрос успешно удалён",
+	})
 }
