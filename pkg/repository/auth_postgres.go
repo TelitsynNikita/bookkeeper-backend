@@ -28,7 +28,7 @@ func (r *AuthPostgres) CreateUser(user todo.User) (int, error) {
 
 func (r *AuthPostgres) GetUser(userEmail, password string) (todo.User, error) {
 	var user todo.User
-	query := fmt.Sprintf("SELECT id FROM %s WHERE email=$1 AND password=$2", usersTable)
+	query := fmt.Sprintf("SELECT id, role, email FROM %s WHERE email=$1 AND password=$2", usersTable)
 	err := r.db.Get(&user, query, userEmail, password)
 
 	return user, err
