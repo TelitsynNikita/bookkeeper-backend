@@ -27,6 +27,7 @@ type OneRequest struct {
 	Images      []string `json:"images" db:"images"`
 	UserId      int      `json:"user_id" db:"user_id"`
 	FullName    string   `json:"full_name" db:"full_name"`
+	CreatedAt   string   `json:"created_at" db:"created_at"`
 }
 
 type UpdateStatus struct {
