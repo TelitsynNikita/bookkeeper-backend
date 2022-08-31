@@ -16,7 +16,6 @@ func NewRequestListPostgres(db *sqlx.DB) *RequestListPostgres {
 
 func (r *RequestListPostgres) Create(userId int, request todo.Request) (int, error) {
 	var id int
-	fmt.Println(request.Images)
 	createRequestQuery := fmt.Sprintf("INSERT INTO %s (purpose, description, amount, user_id) values ($1, $2, $3, $4) RETURNING id", requestsTable)
 	row := r.db.QueryRow(createRequestQuery, request.Purpose, request.Description, request.Amount, userId)
 	if err := row.Scan(&id); err != nil {

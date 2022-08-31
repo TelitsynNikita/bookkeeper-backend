@@ -7,3 +7,14 @@ type User struct {
 	Password string `json:"password"`
 	Role     string `json:"role"`
 }
+
+type SignInUser struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type SignUpUser struct {
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

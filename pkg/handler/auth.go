@@ -1,43 +1,67 @@
 package handler
 
 import (
+	"encoding/json"
 	todo "github.com/TelitsynNikita/bookkeeper-backend"
-	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func (h *Handler) signUp(c *gin.Context) {
-	var input todo.User
-	if err := c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
-	id, err := h.services.Authorization.CreateUser(input)
+	var user todo.User
+
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
+	id, err := h.services.Authorization.CreateUser(user)
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	res, err := json.Marshal(map[string]interface{}{
 		"id": id,
 	})
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	w.Write([]byte(res))
 }
 
-func (h *Handler) signIn(c *gin.Context) {
-	var input todo.User
-	if err := c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+func (h *Handler) signIn(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
 		return
 	}
 
-	token, err := h.services.Authorization.GenerateToken(input.Email, input.Password)
+	var user todo.SignInUser
+
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
+	token, err := h.services.Authorization.GenerateToken(user.Email, user.Password)
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	res, err := json.Marshal(map[string]interface{}{
 		"token": token,
 	})
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+	w.Write([]byte(res))
 }

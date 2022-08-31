@@ -31,5 +31,5 @@ type OneRequest struct {
 
 type UpdateStatus struct {
 	Status    string `json:"status" db:"status"`
-	RequestId int    `json:"id" db:"id"`
+	RequestId int    `json:"request_id" db:"id"`
 }

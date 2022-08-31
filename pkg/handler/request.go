@@ -1,98 +1,128 @@
 package handler
 
 import (
+	"encoding/json"
 	todo "github.com/TelitsynNikita/bookkeeper-backend"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
 
-func (h *Handler) GetAllRequests(c *gin.Context) {
+func (h *Handler) GetAllRequests(w http.ResponseWriter, r *http.Request) {
 	requests, err := h.services.RequestList.GetAll()
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"requests": requests,
-	})
+	b, _ := json.Marshal(requests)
+	w.Write([]byte(b))
 }
 
-func (h *Handler) GetOneRequest(c *gin.Context) {
-	requestId, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
+func (h *Handler) GetOneRequest(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	requestId, _ := strconv.Atoi(vars["id"])
 
 	request, err := h.services.RequestList.GetOne(requestId)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": request,
-	})
+	b, _ := json.Marshal(request)
+	w.Write([]byte(b))
 }
 
-func (h *Handler) CreateRequest(c *gin.Context) {
-	userId, ok := c.Get(userCtx)
-	if !ok {
-		NewErrorResponse(c, http.StatusInternalServerError, "user id not found")
+func (h *Handler) CreateRequest(w http.ResponseWriter, r *http.Request) {
+	userId, err := h.services.ParseToken(r.Header.Get(authorizationHeader))
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	if err := r.ParseForm(); err != nil {
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
 	var input todo.Request
-	if err := c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
 
-	id, err := h.services.RequestList.Create(userId.(int), input)
+	err = json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
+	id, err := h.services.RequestList.Create(userId, input)
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	res, err := json.Marshal(map[string]interface{}{
 		"id": id,
 	})
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	w.Write([]byte(res))
+
 }
 
-func (h *Handler) UpdateRequest(c *gin.Context) {
+func (h *Handler) UpdateRequest(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
 	var input todo.UpdateStatus
-	if err := c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
 
-	err := h.services.RequestList.Update(input)
+	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
+	err = h.services.RequestList.Update(input)
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	res, err := json.Marshal(map[string]interface{}{
 		"message": "Успешно обновлено",
 	})
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	w.Write([]byte(res))
 }
 
-func (h *Handler) DeleteRequest(c *gin.Context) {
-	requestId, err := strconv.Atoi(c.Param("id"))
+func (h *Handler) DeleteRequest(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	requestId, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
 	err = h.services.RequestList.DeleteOne(requestId)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Запрос успешно удалён",
+	res, err := json.Marshal(map[string]interface{}{
+		"message": "Успешно удалено",
 	})
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	w.Write([]byte(res))
 }

@@ -2,7 +2,9 @@ package handler
 
 import (
 	"github.com/TelitsynNikita/bookkeeper-backend/pkg/service"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"net/http"
 )
 
 type Handler struct {
@@ -13,26 +15,22 @@ func NewHandler(services *service.Service) *Handler {
 	return &Handler{services: services}
 }
 
-func (h *Handler) InitRoutes() *gin.Engine {
-	router := gin.New()
+func (h *Handler) InitRoutes() http.Handler {
+	router := mux.NewRouter()
 
-	auth := router.Group("/auth")
-	{
-		auth.POST("/sign-up", h.signUp)
-		auth.POST("/sign-in", h.signIn)
-	}
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "PATCH"})
+	origins := handlers.AllowedOrigins([]string{"*"})
 
-	api := router.Group("/api", h.userIdentity)
-	{
-		request := api.Group("request")
-		{
-			request.GET("/", h.GetAllRequests)
-			request.GET("/:id", h.GetOneRequest)
-			request.POST("/", h.CreateRequest)
-			request.PATCH("/", h.UpdateRequest)
-			request.DELETE("/:id", h.DeleteRequest)
-		}
-	}
+	router.Use(h.userIdentity)
 
-	return router
+	router.HandleFunc("/auth/sign-up", h.signUp).Methods("POST")
+	router.HandleFunc("/auth/sign-in", h.signIn).Methods("POST")
+	router.HandleFunc("/api/request/{id}", h.GetOneRequest).Methods("GET")
+	router.HandleFunc("/api/request", h.GetAllRequests).Methods("GET")
+	router.HandleFunc("/api/request", h.CreateRequest).Methods("POST")
+	router.HandleFunc("/api/request/{id}", h.DeleteRequest).Methods("DELETE")
+	router.HandleFunc("/api/request", h.UpdateRequest).Methods("PATCH")
+
+	return handlers.CORS(headers, methods, origins)(router)
 }

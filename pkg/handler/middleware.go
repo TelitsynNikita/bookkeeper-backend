@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
@@ -11,24 +10,20 @@ const (
 	userCtx             = "userId"
 )
 
-func (h *Handler) userIdentity(c *gin.Context) {
-	header := c.GetHeader(authorizationHeader)
-	if header == "" {
-		NewErrorResponse(c, http.StatusUnauthorized, "empty auth header")
-		return
-	}
+func (h *Handler) userIdentity(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		header := r.Header.Get(authorizationHeader)
+		if header == "" {
+			NewErrorResponse(w, "empty auth header")
+			return
+		}
 
-	headerParts := strings.Split(header, " ")
-	if len(headerParts) != 2 {
-		NewErrorResponse(c, http.StatusUnauthorized, "invalid auth header")
-		return
-	}
+		headerParts := strings.Split(header, " ")
+		if len(headerParts) != 2 {
+			NewErrorResponse(w, "invalid auth header")
+			return
+		}
 
-	userId, err := h.services.ParseToken(headerParts[1])
-	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
-		return
-	}
-
-	c.Set(userCtx, userId)
+		next.ServeHTTP(w, r)
+	})
 }

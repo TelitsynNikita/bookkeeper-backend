@@ -7,6 +7,7 @@ import (
 	todo "github.com/TelitsynNikita/bookkeeper-backend"
 	"github.com/TelitsynNikita/bookkeeper-backend/pkg/repository"
 	"github.com/dgrijalva/jwt-go"
+	"strings"
 	"time"
 )
 
@@ -56,7 +57,9 @@ func (s *AuthService) GenerateToken(userEmail, password string) (string, error) 
 }
 
 func (s *AuthService) ParseToken(accessToken string) (int, error) {
-	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+	headerParts := strings.Split(accessToken, " ")
+
+	token, err := jwt.ParseWithClaims(headerParts[1], &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
