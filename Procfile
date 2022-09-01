@@ -1,1 +1,1 @@
-web: bin/bookkeeper-backend/cmd
+web: bin/bookkeeper-backend
