@@ -1,1 +1,1 @@
-web: bin/bookkeeper12345
+web: bin/bookkeeper-backend
