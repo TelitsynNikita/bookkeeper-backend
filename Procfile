@@ -1,1 +1,1 @@
-web: bookkeeper-backend
+web: Desktop/bookkeeper-backend
