@@ -1,1 +1,1 @@
-web: bin/bookkeeper-backend
+web: bin/github.com/TelitsynNikita/bookkeeper-backend
