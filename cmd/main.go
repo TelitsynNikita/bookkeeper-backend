@@ -11,18 +11,19 @@ import (
 )
 
 func main() {
-	logrus.SetFormatter(new(logrus.JSONFormatter))
 	if err := initConfig(); err != nil {
-		logrus.Fatalf("faild to initialize configs %s", err.Error())
+		logrus.Fatalf("error initializing configs: %s", err.Error())
 	}
+
+	logrus.SetFormatter(new(logrus.JSONFormatter))
 
 	db, err := repository.NewPostgresDB(repository.Config{
 		Host:     viper.GetString("db.host"),
 		Port:     viper.GetString("db.port"),
 		UserName: viper.GetString("db.username"),
-		Password: viper.GetString("db.password"),
 		DBName:   viper.GetString("db.dbname"),
 		SSLMode:  viper.GetString("db.sslmode"),
+		Password: viper.GetString("db.password"),
 	})
 	if err != nil {
 		logrus.Fatalf("failed to initialize db %s", err.Error())

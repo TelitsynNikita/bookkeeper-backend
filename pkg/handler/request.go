@@ -16,7 +16,7 @@ func (h *Handler) GetAllRequests(w http.ResponseWriter, r *http.Request) {
 	}
 
 	b, _ := json.Marshal(requests)
-	w.Write([]byte(b))
+	w.Write(b)
 }
 
 func (h *Handler) GetOneRequest(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +30,7 @@ func (h *Handler) GetOneRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	b, _ := json.Marshal(request)
-	w.Write([]byte(b))
+	w.Write(b)
 }
 
 func (h *Handler) CreateRequest(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +67,7 @@ func (h *Handler) CreateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(res))
+	w.Write(res)
 
 }
 
@@ -77,7 +77,7 @@ func (h *Handler) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input todo.UpdateStatus
+	var input []todo.UpdateStatus
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
@@ -85,21 +85,19 @@ func (h *Handler) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.services.RequestList.Update(input)
-	if err != nil {
-		NewErrorResponse(w, err.Error())
-		return
+	for _, request := range input {
+		err = h.services.RequestList.Update(request)
+		if err != nil {
+			NewErrorResponse(w, err.Error())
+			return
+		}
 	}
 
-	res, err := json.Marshal(map[string]interface{}{
+	res, _ := json.Marshal(map[string]interface{}{
 		"message": "Успешно обновлено",
 	})
-	if err != nil {
-		NewErrorResponse(w, err.Error())
-		return
-	}
 
-	w.Write([]byte(res))
+	w.Write(res)
 }
 
 func (h *Handler) DeleteRequest(w http.ResponseWriter, r *http.Request) {
@@ -116,13 +114,9 @@ func (h *Handler) DeleteRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(map[string]interface{}{
+	res, _ := json.Marshal(map[string]interface{}{
 		"message": "Успешно удалено",
 	})
-	if err != nil {
-		NewErrorResponse(w, err.Error())
-		return
-	}
 
-	w.Write([]byte(res))
+	w.Write(res)
 }
