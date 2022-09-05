@@ -34,7 +34,7 @@ func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(res))
+	w.Write(res)
 }
 
 func (h *Handler) signIn(w http.ResponseWriter, r *http.Request) {
@@ -63,5 +63,5 @@ func (h *Handler) signIn(w http.ResponseWriter, r *http.Request) {
 		NewErrorResponse(w, err.Error())
 		return
 	}
-	w.Write([]byte(res))
+	w.Write(res)
 }
