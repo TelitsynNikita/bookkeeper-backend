@@ -27,7 +27,7 @@ func (r *RequestListPostgres) Create(userId int, request todo.Request) (int, err
 
 func (r *RequestListPostgres) GetAll() ([]todo.AllRequests, error) {
 	var requests []todo.AllRequests
-	query := fmt.Sprintf("SELECT tl.id, tl.purpose, tl.amount, tl.status, ul.full_name FROM %s tl JOIN %s ul on tl.user_id = ul.id",
+	query := fmt.Sprintf("SELECT tl.id, tl.purpose, tl.amount, tl.status, tl.bookkeeper_id, ul.full_name FROM %s tl JOIN %s ul on tl.user_id = ul.id",
 		requestsTable, usersTable)
 	err := r.db.Select(&requests, query)
 

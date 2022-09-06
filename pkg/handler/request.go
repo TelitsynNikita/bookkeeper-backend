@@ -55,7 +55,7 @@ func (h *Handler) CreateRequest(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.services.RequestList.Create(userId, input)
 	if err != nil {
-		NewErrorResponse(w, "Некорректные данные")
+		NewErrorResponse(w, err.Error())
 		return
 	}
 
