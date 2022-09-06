@@ -30,7 +30,12 @@ type OneRequest struct {
 	CreatedAt   string   `json:"created_at" db:"created_at"`
 }
 
-type UpdateStatus struct {
+type UpdateRequestStatus struct {
 	Status    string `json:"status" db:"status"`
 	RequestId int    `json:"request_id" db:"id"`
+}
+
+type UpdateRequestBookkeeperId struct {
+	BookkeeperId int `json:"bookkeeper_id" db:"id"`
+	RequestId    int `json:"request_id" db:"id"`
 }

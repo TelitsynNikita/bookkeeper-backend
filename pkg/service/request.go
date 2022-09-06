@@ -29,6 +29,10 @@ func (s *RequestListService) DeleteOne(requestId int) error {
 	return s.repo.DeleteOne(requestId)
 }
 
-func (s *RequestListService) Update(requestStatus todo.UpdateStatus) error {
+func (s *RequestListService) Update(requestStatus todo.UpdateRequestStatus) error {
 	return s.repo.Update(requestStatus)
+}
+
+func (s *RequestListService) UpdateRequestBookkeeperId(requestBookkeeperId todo.UpdateRequestBookkeeperId) error {
+	return s.repo.UpdateBookkeeperId(requestBookkeeperId)
 }

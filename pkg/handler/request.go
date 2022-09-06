@@ -25,7 +25,7 @@ func (h *Handler) GetOneRequest(w http.ResponseWriter, r *http.Request) {
 
 	request, err := h.services.RequestList.GetOne(requestId)
 	if err != nil {
-		NewErrorResponse(w, err.Error())
+		NewErrorResponse(w, "Такой запрос не существует")
 		return
 	}
 
@@ -55,7 +55,7 @@ func (h *Handler) CreateRequest(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.services.RequestList.Create(userId, input)
 	if err != nil {
-		NewErrorResponse(w, err.Error())
+		NewErrorResponse(w, "Некорректные данные")
 		return
 	}
 
@@ -77,7 +77,7 @@ func (h *Handler) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input []todo.UpdateStatus
+	var input []todo.UpdateRequestStatus
 
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
@@ -88,7 +88,7 @@ func (h *Handler) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 	for _, request := range input {
 		err = h.services.RequestList.Update(request)
 		if err != nil {
-			NewErrorResponse(w, err.Error())
+			NewErrorResponse(w, "Невозможно изменить статус")
 			return
 		}
 	}
@@ -110,12 +110,39 @@ func (h *Handler) DeleteRequest(w http.ResponseWriter, r *http.Request) {
 
 	err = h.services.RequestList.DeleteOne(requestId)
 	if err != nil {
-		NewErrorResponse(w, err.Error())
+		NewErrorResponse(w, "Невозможно удалить несуществующую заявку")
 		return
 	}
 
 	res, _ := json.Marshal(map[string]interface{}{
 		"message": "Успешно удалено",
+	})
+
+	w.Write(res)
+}
+
+func (h *Handler) UpdateRequestBookkeeperId(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	var input todo.UpdateRequestBookkeeperId
+
+	err := json.NewDecoder(r.Body).Decode(&input)
+	if err != nil {
+		NewErrorResponse(w, err.Error())
+		return
+	}
+
+	err = h.services.UpdateRequestBookkeeperId(input)
+	if err != nil {
+		NewErrorResponse(w, "Невозможно обновить")
+		return
+	}
+
+	res, _ := json.Marshal(map[string]interface{}{
+		"message": "Успешно обновлено",
 	})
 
 	w.Write(res)

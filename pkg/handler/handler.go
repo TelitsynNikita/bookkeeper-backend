@@ -31,6 +31,7 @@ func (h *Handler) InitRoutes() http.Handler {
 	router.HandleFunc("/api/requests", h.CreateRequest).Methods("POST")
 	router.HandleFunc("/api/requests/{id}", h.DeleteRequest).Methods("DELETE")
 	router.HandleFunc("/api/requests", h.UpdateRequest).Methods("PATCH")
+	router.HandleFunc("/api/requests/update-id", h.UpdateRequestBookkeeperId).Methods("PATCH")
 
 	return handlers.CORS(headers, methods, origins)(router)
 }

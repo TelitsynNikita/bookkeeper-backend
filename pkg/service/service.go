@@ -16,7 +16,8 @@ type RequestList interface {
 	GetAll() ([]todo.AllRequests, error)
 	GetOne(requestId int) (todo.OneRequest, error)
 	DeleteOne(requestId int) error
-	Update(requestStatus todo.UpdateStatus) error
+	Update(requestStatus todo.UpdateRequestStatus) error
+	UpdateRequestBookkeeperId(requestBookkeeperId todo.UpdateRequestBookkeeperId) error
 }
 
 type Service struct {

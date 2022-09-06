@@ -50,9 +50,16 @@ func (r *RequestListPostgres) DeleteOne(requestId int) error {
 	return err
 }
 
-func (r *RequestListPostgres) Update(requestStatus todo.UpdateStatus) error {
+func (r *RequestListPostgres) Update(requestStatus todo.UpdateRequestStatus) error {
 	query := fmt.Sprintf("UPDATE %s tl SET status=$1  WHERE id=$2", requestsTable)
 	_, err := r.db.Exec(query, requestStatus.Status, requestStatus.RequestId)
+
+	return err
+}
+
+func (r *RequestListPostgres) UpdateBookkeeperId(requestBookkeeperId todo.UpdateRequestBookkeeperId) error {
+	query := fmt.Sprintf("UPDATE %s tl SET bookkeeper_id=$1  WHERE id=$2", requestsTable)
+	_, err := r.db.Exec(query, requestBookkeeperId.BookkeeperId, requestBookkeeperId.RequestId)
 
 	return err
 }
