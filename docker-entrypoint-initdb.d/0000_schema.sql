@@ -15,6 +15,6 @@ create table requests
     amount integer not null,
     status varchar(255) default 'NEW' not null,
     user_id integer not null references users (id) on delete cascade,
-    bookkeeper_id integer references users (id) on delete cascade default 0,
+    bookkeeper_id integer  default 0,
     created_at    timestamp    default now()
 );
