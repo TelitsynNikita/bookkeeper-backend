@@ -1,0 +1,2 @@
+insert into users (full_name, email, password, role) values ('mr Robot', 'hello@hello.ru', 'hellohello', 'BOOKKEEPER');
+insert into users (full_name, email, password) values ('mr User', 'user@user.ru', 'hellohello');

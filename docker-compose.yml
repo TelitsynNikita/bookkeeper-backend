@@ -3,7 +3,6 @@ version: '3.8'
 services:
   todo-app:
     build: ./
-    command: ./todo-app
     ports:
       - 8000:8000
     depends_on:
@@ -15,8 +14,8 @@ services:
     restart: always
     image: postgres:latest
     volumes:
-      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_PASSWORD=postgres
     ports:
-      - 5432:5432
+      - 5433:5432
